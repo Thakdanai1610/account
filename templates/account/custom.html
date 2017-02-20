@@ -1,0 +1,105 @@
+<html>
+<head>
+    <title>Account : Customize</title>
+        <meta charset="UTF-8">
+    <style>
+    .button {
+    width: 60px;
+    height: 30px;
+    text-align: center;
+    font-size: 16px;
+    margin: 4px 4px 4px 4px;
+    border-radius: 6px;
+    cursor: pointer;
+    } 
+        table, th, td {
+            border: 1px solid black;
+        }
+    </style>
+        {% load static %}
+    <link rel="stylesheet" href="{% static 'script/jquery-ui.css' %}">
+    <link rel="stylesheet" href="{% static 'script/style.css' %}">
+    <script src="{% static 'script/jquery-1.12.4.js' %}"></script>
+    <script src="{% static 'script/jquery-ui.js' %}"></script>
+    <script>
+        $( function() {
+            $( "#datepicker" ).datepicker({ dateFormat: 'dd/mm/yy'}); 
+        } );
+    </script>
+</head>
+
+<body>
+<p  style="text-align:right"><a href="{% url 'account:show' %}">กลับสู่หน้าหลัก</a></p>
+
+<h1> Account </h1>
+
+<table>
+<tr style="height: 30px">
+<th style="width:100px;">วัน/เดือน/ปี</th>
+<th style="width:300px">รายการ</th>
+<th style="width:150px;">รายรับ</th>
+<th style="width:150px;">รายจ่าย</th>
+<th style="width:150px;">คงเหลือ</th>
+</tr>
+{% load humanize %}
+{% for list in all_list %}
+<tr>
+{% if list.id == remove_id %}
+        <td colspan="6" style="text-align:center">
+        <a href="{% url 'account:remove_confirm' list.id %}">
+        <button class="button" style="background-color:green; color:white;"
+                type="submit"><b>ยืนยัน</b></button></a>&nbsp; &nbsp;
+        <a href="{% url 'account:customize' %}">
+        <button class="button" style="background-color:red; color:white;" 
+                type="button" ><b>ยกเลิก</b></button></a></td>
+
+{% elif list.id == edit_id %}
+<form action="{% url 'account:edit_save' list.id %}" method="post">
+{% csrf_token %}
+<td><input type="text" id="datepicker" name="date" value="{{list.save_date|date:'d/m/Y'}}" 
+        pattern="[0-9]{2}/[0-9]{2}/[0-9]{4}" style="text-align:center; width:100px;" required></td>
+<td><input type="text" name="detail" pattern=".{0,80}" value="{{ list.detail_text }}"
+        style="width:300px" required></td>
+<td colspan="3">
+    {% if list.income > 0 %}
+        <input type="text" name="money" pattern="([0-9,]+)|([0-9,]+\.[0-9]{0,2})"
+        style="width:300px" value="{{ list.income|floatformat:2 }}"  required>
+        <input type="radio" name="in_type" value="income" checked> รายรับ 
+        <input type="radio" name="in_type" value="expenses" > รายจ่าย 
+    {% else %}
+        <input type="text" name="money" pattern="([0-9,]+)|([0-9,]+\.[0-9]{0,2})"
+        style="width:300px" value="{{ list.expenses|floatformat:2 }}"  required>
+        <input type="radio" name="in_type" value="income"> รายรับ 
+        <input type="radio" name="in_type" value="expenses" checked> รายจ่าย 
+    {% endif %}
+</td>
+<td style="text-align:center">
+    <button class="button" style="background-color:green; color:white;"
+                type="submit"><b>บันทึก</b></button>
+    <a href="{% url 'account:customize' %}">
+    <button class="button" style="background-color:red; color:white;" 
+                type="button" ><b>ยกเลิก</b></button></a>
+</td>
+</form>
+
+{% else %}
+<td style="text-align:center">{% ifchanged list.save_date %}{{ list.save_date|date:"d/m/Y" }}{% endifchanged %}</td>
+<td>{{ list.detail_text }}</td>
+<td style="text-align:right">{% if list.income > 0 %}{{ list.income|floatformat:2|intcomma }}{% endif %}</td>
+<td style="text-align:right">{% if list.expenses > 0 %}{{ list.expenses|floatformat:2|intcomma }}{% endif %}</td>
+<td style="text-align:right">{{ list.balance|floatformat:2|intcomma }}</td>
+<td style="text-align:center">
+    <a href="{% url 'account:edit' list.id %}">
+    <button class="button" style="background-color:orange; color:white;"
+                type="submit"><b>แก้ไข</b></button></a>
+    <a href="{% url 'account:remove' list.id %}">
+    <button class="button" style="background-color:red; color:white;" 
+                type="button" ><b>ลบ</b></button></a></td>
+{% endif %}
+</tr>
+{% endfor %}
+</table>
+<br/>
+</body>
+</html>
+ 
