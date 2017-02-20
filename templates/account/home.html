@@ -1,0 +1,75 @@
+<html>
+<head>
+    <title>Account</title>
+    <style>
+        table, th, td {
+            border: 1px solid black;
+        }
+    </style>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'script/jquery-ui.css' %}">
+    <link rel="stylesheet" href="{% static 'script/style.css' %}">
+    <script src="{% static 'script/jquery-1.12.4.js' %}"></script>
+    <script src="{% static 'script/jquery-ui.js' %}"></script>
+    <script>
+        $( function() {
+            $( "#datepicker" ).datepicker({ dateFormat: 'dd/mm/yy'}); 
+        } );
+    </script>
+    
+</head>
+
+<body>
+<p  style="text-align:right"><a href="{% url 'account:customize' %}">แก้ไขรายการ</a></p>
+<h1> Account </h1>
+ 
+<form action="{% url 'account:save_list' %}" method="post">
+{% csrf_token %}
+
+Please Enter Date :
+<input type="text" id="datepicker" name="date" required
+    pattern="[0-9]{2}/[0-9]{2}/[0-9]{4}" placeholder="Example : 01/01/2017">
+<br/><br/>
+
+Please Enter Detail :
+<input type="text" name="detail" pattern=".{0,80}" style="width:400px"
+       placeholder="Example : ยืมตังค์พี่สุชาติ" required>
+<br/><br/>
+
+Select type :
+<input type="radio" name="in_type" value="income" checked> รายรับ 
+<input type="radio" name="in_type" value="expenses"> รายจ่าย 
+<br/><br/>
+
+Please Enter Money :
+<input type="text" name="money" pattern="([0-9,]+)|([0-9,]+\.[0-9]{0,2})" style="width:300px" 
+    placeholder="Example : 9999 หรือ 9999.00 หรือ 9,999.00" required>
+<input type="submit" value="Enter!"/>
+
+</form>
+
+<br/>
+
+<p>Output : </p>
+<table>
+<tr style="height: 30px">
+<th style="width:100px;">วัน/เดือน/ปี</th>
+<th style="width:300px">รายการ</th>
+<th style="width:150px;">รายรับ</th>
+<th style="width:150px;">รายจ่าย</th>
+<th style="width:150px;">คงเหลือ</th>
+</tr>
+{% load humanize %}
+{% for list in all_list %}
+<tr style="height: 30px">
+<td style="text-align:center">{% ifchanged list.save_date %}{{ list.save_date|date:"d/m/Y" }}{% endifchanged %}</td>
+<td>{{ list.detail_text }}</td>
+<td style="text-align:right">{% if list.income > 0 %}{{ list.income|floatformat:2|intcomma }}{% endif %}</td>
+<td style="text-align:right">{% if list.expenses > 0 %}{{ list.expenses|floatformat:2|intcomma }}{% endif %}</td>
+<td style="text-align:right">{{ list.balance|floatformat:2|intcomma }}</td>
+</tr>
+{% endfor %}
+</table>
+<br/>
+</body>
+</html>
