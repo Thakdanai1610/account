@@ -1,12 +1,20 @@
 <html>
+{% load static %}
 <head>
     <title>Account</title>
     <style>
         table, th, td {
             border: 1px solid black;
+            background-color: white;
+        }
+        .table_div {
+        width: 850px;
+        position: relative;
+        left: 50%;
+        margin: 0 0 0 -425px;
         }
     </style>
-    {% load static %}
+    
     <link rel="stylesheet" href="{% static 'script/jquery-ui.css' %}">
     <link rel="stylesheet" href="{% static 'script/style.css' %}">
     <script src="{% static 'script/jquery-1.12.4.js' %}"></script>
@@ -19,13 +27,21 @@
     
 </head>
 
-<body>
-<p  style="text-align:right"><a href="{% url 'account:customize' %}">แก้ไขรายการ</a></p>
-<h1> Account </h1>
- 
+<body style="background-image:url({% static 'pic/bg.jpg' %});
+        min-height:100%;">
+<p style="text-align:right;"><a href="{% url 'account:customize' %}">
+<span  style="background-color:white">แก้ไขรายการ</span></a></p>
+
+<h1 style="text-align:center"> Account </h1>
+<h2 style="text-align:center"> บัญชีรายรับ-รายจ่าย </h2>
+
+<div style="background-color:white;">
 <form action="{% url 'account:save_list' %}" method="post">
 {% csrf_token %}
 
+<fieldset>
+<legend ><b> บันทึกข้อมูล </b></legend>
+</br>
 Please Enter Date :
 <input type="text" id="datepicker" name="date" required
     pattern="[0-9]{2}/[0-9]{2}/[0-9]{4}" placeholder="Example : 01/01/2017">
@@ -45,14 +61,14 @@ Please Enter Money :
 <input type="text" name="money" pattern="([0-9,]+)|([0-9,]+\.[0-9]{0,2})" style="width:300px" 
     placeholder="Example : 9999 หรือ 9999.00 หรือ 9,999.00" required>
 <input type="submit" value="Enter!"/>
-
+</fieldset>
 </form>
+</div>
 
-<br/>
-
-<p>Output : </p>
+<br/><br/>
+<div class="table_div">
 <table>
-<tr style="height: 30px">
+<tr style="height: 30px;color:green">
 <th style="width:100px;">วัน/เดือน/ปี</th>
 <th style="width:300px">รายการ</th>
 <th style="width:150px;">รายรับ</th>
@@ -70,6 +86,7 @@ Please Enter Money :
 </tr>
 {% endfor %}
 </table>
+</div>
 <br/>
 </body>
 </html>

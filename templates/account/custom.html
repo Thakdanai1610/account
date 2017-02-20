@@ -14,6 +14,13 @@
     } 
         table, th, td {
             border: 1px solid black;
+            background-color: white;
+        }
+        .table_div {
+        width: 1040px;
+        position: relative;
+        left: 50%;
+        margin: 0 0 0 -520px;
         }
     </style>
         {% load static %}
@@ -28,27 +35,31 @@
     </script>
 </head>
 
-<body>
-<p  style="text-align:right"><a href="{% url 'account:show' %}">กลับสู่หน้าหลัก</a></p>
+<body style="background-image:url({% static 'pic/bg.jpg' %}">
+<p  style="text-align:right"><a href="{% url 'account:show' %}">
+<span  style="background-color:white">กลับสู่หน้าหลัก</span></a></p>
 
-<h1> Account </h1>
+<h1 style="text-align:center"> Account </h1>
+<h2 style="text-align:center"> แก้ไขรายการ </h2>
 
+<div class="table_div">
 <table>
-<tr style="height: 30px">
+<tr style="height: 30px;color:green">
 <th style="width:100px;">วัน/เดือน/ปี</th>
 <th style="width:300px">รายการ</th>
-<th style="width:150px;">รายรับ</th>
-<th style="width:150px;">รายจ่าย</th>
-<th style="width:150px;">คงเหลือ</th>
+<th style="width:160px;">รายรับ</th>
+<th style="width:160px;">รายจ่าย</th>
+<th style="width:160px;">คงเหลือ</th>
 </tr>
 {% load humanize %}
 {% for list in all_list %}
 <tr>
 {% if list.id == remove_id %}
         <td colspan="6" style="text-align:center">
+        <b>ลบรายการ : {{list.detail_text}}</b>&nbsp; &nbsp;
         <a href="{% url 'account:remove_confirm' list.id %}">
         <button class="button" style="background-color:green; color:white;"
-                type="submit"><b>ยืนยัน</b></button></a>&nbsp; &nbsp;
+                type="submit"><b>ยืนยัน</b></button></a>&nbsp;
         <a href="{% url 'account:customize' %}">
         <button class="button" style="background-color:red; color:white;" 
                 type="button" ><b>ยกเลิก</b></button></a></td>
@@ -88,7 +99,7 @@
 <td style="text-align:right">{% if list.income > 0 %}{{ list.income|floatformat:2|intcomma }}{% endif %}</td>
 <td style="text-align:right">{% if list.expenses > 0 %}{{ list.expenses|floatformat:2|intcomma }}{% endif %}</td>
 <td style="text-align:right">{{ list.balance|floatformat:2|intcomma }}</td>
-<td style="text-align:center">
+<td style="text-align:center;width:160px">
     <a href="{% url 'account:edit' list.id %}">
     <button class="button" style="background-color:orange; color:white;"
                 type="submit"><b>แก้ไข</b></button></a>
@@ -99,7 +110,7 @@
 </tr>
 {% endfor %}
 </table>
+</div>
 <br/>
 </body>
 </html>
- 
