@@ -1,0 +1,57 @@
+<html>
+<head>
+    <title>Account : Customize</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    <link rel="stylesheet" href="{% static 'script/jquery-ui.css' %}">
+    <link rel="stylesheet" href="{% static 'script/style.css' %}">
+    <meta charset="UTF-8">
+</head>
+
+<body style="background-image:url({% static 'pic/bg.jpg' %}">
+<ul>
+  <li><a href="{% url 'account:show' %}">Home</a></li>
+  <li style="float:right"><a href="{% url 'account:customize' %}" title="edit/delete data">Edit</a></li>
+  <li style="float:right"><a href="{% url 'account:export_csv' %}" title="Export data to CSV file">Export</a></li>
+  <li style="float:right"><a class="active" href="{% url 'account:import_page' %}" title="Import data from CSV file">Import</a></li>
+</ul>
+
+<h1 style="text-align:center"> Import </h1>
+
+<div class="import_div">
+<form action="{% url 'account:import_csv' %}" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <br/><br/>
+    <input type="file" name="file" accept=".csv"> &nbsp;
+    <input type="checkbox" name="overwrite"> Overwrite
+    <br/><br/><br/>
+    
+    <button class="import" type="submit"><b>อัพโหลด</b></button></a>
+    <br/><br/>
+    <span style="color:red">*คำเตือน : หากเลือก overwrite ข้อมูลเก่าจะหายไป แนะนำให้ Export เก็บไว้ก่อน</span>
+    <br/><br/>
+    </form>
+</div>
+
+{% if error_message %}
+<div class="error_div">
+{{ error_message }}
+</div>
+{% elif notsupport_message %}
+<div class="error_div">
+This CSV file not Support!!!<br/>
+<div class="notsupport_div">
+<h3>รูปแบบที่รองรับ</h3>
+มีส่วนหัวเพียง 4-5 ส่วนเท่านั้น (อาจมีส่วนของ"ยอดเงินคงเหลือ" หรือไม่มีก็ได้)<br/>ได้แก่<br/>
+<b>ส่วนหัวของวันที่</b> ให้ใช้คำว่า <b>date, Date, วัน/เดือน/ปี</b> เท่านั้น<br/>
+<b>ส่วนหัวของรายการ</b> ให้ใช้คำว่า <b>detail, Detail, รายการ</b> เท่านั้น<br/>
+<b>ส่วนหัวของจำนวนเงิน</b> ให้ใช้คำว่า <b>money, Money, จำนวนเงิน</b> เท่านั้น<br/>
+<b>ส่วนหัวของประเภทของเงิน</b> ให้ใช้คำว่า <b>type, Type, จำนวนเงิน</b> เท่านั้น<br/>
+</div>
+</div>
+{% endif %}
+
+
+</body>
+</html>
+ 

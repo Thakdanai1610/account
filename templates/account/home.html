@@ -2,18 +2,8 @@
 {% load static %}
 <head>
     <title>Account</title>
-    <style>
-        table, th, td {
-            border: 1px solid black;
-            background-color: white;
-        }
-        .table_div {
-        width: 850px;
-        position: relative;
-        left: 50%;
-        margin: 0 0 0 -425px;
-        }
-    </style>
+    
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
     
     <link rel="stylesheet" href="{% static 'script/jquery-ui.css' %}">
     <link rel="stylesheet" href="{% static 'script/style.css' %}">
@@ -27,20 +17,56 @@
     
 </head>
 
-<body style="background-image:url({% static 'pic/bg.jpg' %});
-        min-height:100%;">
-<p style="text-align:right;"><a href="{% url 'account:customize' %}">
-<span  style="background-color:white">แก้ไขรายการ</span></a></p>
+<body style="background-image:url({% static 'pic/bg.jpg' %});">
 
-<h1 style="text-align:center"> Account </h1>
+<ul>
+  <li><a class="active" href="{% url 'account:show' %}">Home</a></li>
+  <li style="float:right;"><a href="{% url 'login'%}">login again.</a>
+  <li style="float:right;"><a href="{% url 'account:customize' %}" title="edit/delete data">Edit</a></li>
+  <li style="float:right"><a href="{% url 'account:export_csv' %}" title="Export data to CSV file">Export</a></li>
+  <li style="float:right"><a href="{% url 'account:import_page' %}" title="Import data from CSV file">Import</a></li>
+</ul>
+
 <h2 style="text-align:center"> บัญชีรายรับ-รายจ่าย </h2>
 
-<div style="background-color:white;">
+<div class="show_table">
+<table name="table_result">
+<tr style="height: 30px;color:green">
+<th style="width:100px;">วัน/เดือน/ปี</th>
+<th style="width:300px">รายการ</th>
+<th style="width:150px;">รายรับ</th>
+<th style="width:150px;">รายจ่าย</th>
+<th style="width:150px;">คงเหลือ</th>
+</tr>
+{% load humanize %}
+
+{% if not all_list %}
+<td colspan="5" style="text-align:center;height:50px">
+    <b>ยังไม่มีข้อมูล</b>
+</td>
+
+{% else %}
+{% for list in all_list %}
+<tr style="height: 30px">
+<td style="text-align:center">{% ifchanged list.save_date %}{{ list.save_date|date:"d/m/Y" }}{% endifchanged %}</td>
+<td>{{ list.detail_text }}</td>
+<td style="text-align:right">{% if list.money_type == 'income' %}{{ list.money|floatformat:2|intcomma }}{% endif %}</td>
+<td style="text-align:right">{% if list.money_type == 'expenses' %}{{ list.money|floatformat:2|intcomma }}{% endif %}</td>
+<td style="text-align:right">{{ list.balance|floatformat:2|intcomma }}</td>
+</tr>
+{% endfor %}
+{% endif %}
+</table>
+</div>
+
+<br/><br/>
+
+<div class="input_form">
 <form action="{% url 'account:save_list' %}" method="post">
 {% csrf_token %}
 
 <fieldset>
-<legend ><b> บันทึกข้อมูล </b></legend>
+<legend align="center"><b> บันทึกข้อมูล </b></legend>
 </br>
 Please Enter Date :
 <input type="text" id="datepicker" name="date" required
@@ -53,39 +79,17 @@ Please Enter Detail :
 <br/><br/>
 
 Select type :
-<input type="radio" name="in_type" value="income" checked> รายรับ 
-<input type="radio" name="in_type" value="expenses"> รายจ่าย 
+<input type="radio" name="in_type" id="income" value="income" checked> รายรับ 
+<input type="radio" name="in_type" id="expenses" value="expenses"> รายจ่าย 
 <br/><br/>
 
 Please Enter Money :
 <input type="text" name="money" pattern="([0-9,]+)|([0-9,]+\.[0-9]{0,2})" style="width:300px" 
     placeholder="Example : 9999 หรือ 9999.00 หรือ 9,999.00" required>
-<input type="submit" value="Enter!"/>
+<br/><br/>
+<input type="submit" name="enter" value="Enter!" style="width:80px;height:40px">
 </fieldset>
 </form>
-</div>
-
-<br/><br/>
-<div class="table_div">
-<table>
-<tr style="height: 30px;color:green">
-<th style="width:100px;">วัน/เดือน/ปี</th>
-<th style="width:300px">รายการ</th>
-<th style="width:150px;">รายรับ</th>
-<th style="width:150px;">รายจ่าย</th>
-<th style="width:150px;">คงเหลือ</th>
-</tr>
-{% load humanize %}
-{% for list in all_list %}
-<tr style="height: 30px">
-<td style="text-align:center">{% ifchanged list.save_date %}{{ list.save_date|date:"d/m/Y" }}{% endifchanged %}</td>
-<td>{{ list.detail_text }}</td>
-<td style="text-align:right">{% if list.income > 0 %}{{ list.income|floatformat:2|intcomma }}{% endif %}</td>
-<td style="text-align:right">{% if list.expenses > 0 %}{{ list.expenses|floatformat:2|intcomma }}{% endif %}</td>
-<td style="text-align:right">{{ list.balance|floatformat:2|intcomma }}</td>
-</tr>
-{% endfor %}
-</table>
 </div>
 <br/>
 </body>
